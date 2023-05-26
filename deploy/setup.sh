@@ -68,7 +68,7 @@ HELM[haproxy]="haproxytech/kubernetes-ingress --version 1.30.5"
 HELM[nginx]="oci://ghcr.io/nginxinc/charts/nginx-ingress --version 0.17.1"
 HELM[nginx-inc]="nginx-stable/nginx-ingress --version 0.17.1"
 HELM[traefik]="traefik/traefik --version 23.0.1"
-HELM[envoy]="oci://registry-1.docker.io/bitnamicharts/contour --version 12.1.0"
+HELM[contour]="oci://registry-1.docker.io/bitnamicharts/contour --version 12.1.0"
 
 sleep 5
 
