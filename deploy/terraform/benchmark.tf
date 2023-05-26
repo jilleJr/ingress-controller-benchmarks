@@ -58,7 +58,7 @@ resource "aws_instance" "k8s-benchmarks" {
     pip3 install matplotlib numpy
     export AWS_ACCESS_KEY_ID=${aws_iam_access_key.user.id}
     export AWS_SECRET_ACCESS_KEY=${aws_iam_access_key.user.secret}
-    aws s3api create-bucket --bucket prefix-k8sbenchmarks-kops-state-store --region ${var.aws_region}
+    aws s3api create-bucket --bucket prefix-k8sbenchmarks-kops-state-store --region ${var.aws_s3_region}
     kops create cluster --state s3://prefix-k8sbenchmarks-kops-state-store --cloud=aws --zones=${var.aws_ec2_zone} --node-count=6 --node-size=c5.xlarge --master-size=c5.xlarge --ssh-public-key ~/k8s-benchmarks.id_rsa.pub --yes --name k8stmp.k8s.local
     kops export kubecfg --state s3://prefix-k8sbenchmarks-kops-state-store --name k8stmp.k8s.local
     mv -v /.kube ~ubuntu/

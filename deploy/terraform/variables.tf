@@ -17,6 +17,11 @@ variable "aws_region" {
   default     = "us-east-2"
 }
 
+variable "aws_s3_region" {
+  description = "AWS region used when creating bucket"
+  default     = "us-east-1"
+}
+
 variable "aws_ec2_zone" {
   description = "AWS EC2 region"
   default     = "us-east-2a"
