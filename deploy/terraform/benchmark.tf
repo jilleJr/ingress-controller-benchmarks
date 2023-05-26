@@ -33,41 +33,41 @@ resource "aws_instance" "k8s-benchmarks" {
   vpc_security_group_ids = [aws_security_group.k8s-benchmarks.id]
   key_name               = aws_key_pair.generated_key.key_name
   user_data              = <<-EOF
-		#! /bin/bash
-                apt-get update
-		apt-get -y upgrade
-                apt-get -y install awscli python3-pip parallel unzip
-                curl -Lo - https://github.com/haproxytech/ingress-controller-benchmarks/archive/master.tar.gz |tar -C ~ubuntu/ -xz
-                mv ~ubuntu/ingress-controller-benchmarks-master ~ubuntu/ingress-controller-benchmarks
-                mkdir -p ~ubuntu/ingress-controller-benchmarks/tmp/single
-                mkdir -p ~ubuntu/ingress-controller-benchmarks/tmp/saturate
-                printf ". ingress-controller-benchmarks/deploy/scripts/configure_k8s_cluster.sh\n" >> ~ubuntu/.profile
-                mkdir ~/.aws
-                printf "[default]\n" > ~/.aws/config
-                printf "region = us-east-2\n" >> ~/.aws/config
-                printf "[default]\n" > ~/.aws/credentials
-                printf "aws_access_key_id = ${aws_iam_access_key.user.id}\n" >> ~/.aws/credentials
-                printf "aws_secret_access_key = ${aws_iam_access_key.user.secret}\n" >> ~/.aws/credentials
-                printf -- "${file(var.privkey_file)}" >> ~/k8s-benchmarks.id_rsa
-                printf -- "${file(var.pubkey_file)}" >> ~/k8s-benchmarks.id_rsa.pub
-                curl -Lo /usr/local/bin/kops https://github.com/kubernetes/kops/releases/download/$(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | grep tag_name | cut -d '"' -f 4)/kops-linux-amd64
-                curl -Lo /usr/local/bin/kubectl "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
-                curl -fsSL  https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 |bash
-                chmod +x /usr/local/bin/kops
-                chmod +x /usr/local/bin/kubectl
-                pip3 install matplotlib numpy
-                export AWS_ACCESS_KEY_ID=${aws_iam_access_key.user.id}
-                export AWS_SECRET_ACCESS_KEY=${aws_iam_access_key.user.secret}
-                aws s3api create-bucket --bucket prefix-k8sbenchmarks-kops-state-store --region us-east-1
-                kops create cluster --state s3://prefix-k8sbenchmarks-kops-state-store --cloud=aws --zones=us-east-2a --node-count=6 --node-size=c5.xlarge --master-size=c5.xlarge --ssh-public-key ~/k8s-benchmarks.id_rsa.pub --yes --name k8stmp.k8s.local
-                kops export kubecfg --state s3://prefix-k8sbenchmarks-kops-state-store --name k8stmp.k8s.local
-                mv /.kube ~ubuntu/
-                cp ~/k8s* ~ubuntu/
-                cp -r ~/.aws ~ubuntu/
-                chmod 700 ~ubuntu/.ssh
-                chmod 600 ~ubuntu/.ssh/id_rsa
-                chown -R ubuntu.ubuntu ~ubuntu/
-	EOF
+    #! /bin/bash
+    apt-get update
+    apt-get -y upgrade
+    apt-get -y install awscli python3-pip parallel unzip
+    curl -Lo - https://github.com/haproxytech/ingress-controller-benchmarks/archive/master.tar.gz |tar -C ~ubuntu/ -xz
+    mv ~ubuntu/ingress-controller-benchmarks-master ~ubuntu/ingress-controller-benchmarks
+    mkdir -p ~ubuntu/ingress-controller-benchmarks/tmp/single
+    mkdir -p ~ubuntu/ingress-controller-benchmarks/tmp/saturate
+    printf ". ingress-controller-benchmarks/deploy/scripts/configure_k8s_cluster.sh\n" >> ~ubuntu/.profile
+    mkdir ~/.aws
+    printf "[default]\n" > ~/.aws/config
+    printf "region = us-east-2\n" >> ~/.aws/config
+    printf "[default]\n" > ~/.aws/credentials
+    printf "aws_access_key_id = ${aws_iam_access_key.user.id}\n" >> ~/.aws/credentials
+    printf "aws_secret_access_key = ${aws_iam_access_key.user.secret}\n" >> ~/.aws/credentials
+    printf -- "${file(var.privkey_file)}" >> ~/k8s-benchmarks.id_rsa
+    printf -- "${file(var.pubkey_file)}" >> ~/k8s-benchmarks.id_rsa.pub
+    curl -Lo /usr/local/bin/kops https://github.com/kubernetes/kops/releases/download/$(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | grep tag_name | cut -d '"' -f 4)/kops-linux-amd64
+    curl -Lo /usr/local/bin/kubectl "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+    curl -fsSL  https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 |bash
+    chmod +x /usr/local/bin/kops
+    chmod +x /usr/local/bin/kubectl
+    pip3 install matplotlib numpy
+    export AWS_ACCESS_KEY_ID=${aws_iam_access_key.user.id}
+    export AWS_SECRET_ACCESS_KEY=${aws_iam_access_key.user.secret}
+    aws s3api create-bucket --bucket prefix-k8sbenchmarks-kops-state-store --region us-east-1
+    kops create cluster --state s3://prefix-k8sbenchmarks-kops-state-store --cloud=aws --zones=us-east-2a --node-count=6 --node-size=c5.xlarge --master-size=c5.xlarge --ssh-public-key ~/k8s-benchmarks.id_rsa.pub --yes --name k8stmp.k8s.local
+    kops export kubecfg --state s3://prefix-k8sbenchmarks-kops-state-store --name k8stmp.k8s.local
+    mv /.kube ~ubuntu/
+    cp ~/k8s* ~ubuntu/
+    cp -r ~/.aws ~ubuntu/
+    chmod 700 ~ubuntu/.ssh
+    chmod 600 ~ubuntu/.ssh/id_rsa
+    chown -R ubuntu.ubuntu ~ubuntu/
+  EOF
 
   depends_on = [
     aws_route_table_association.k8s-benchmarks,
