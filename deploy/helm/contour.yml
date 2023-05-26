@@ -16,4 +16,5 @@ envoy:
     dedicated: controller
   containerSecurityContext:
     runAsUser: 0
+    runAsGroup: 0
     runAsNonRoot: false
