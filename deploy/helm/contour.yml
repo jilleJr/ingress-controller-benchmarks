@@ -6,6 +6,7 @@ envoy:
   service:
     type: ClusterIP
     clusterIP: None
+    externalTrafficPolicy: ""
   tolerations:
     - key: "dedicated"
       operator: "Equal"
