@@ -24,25 +24,25 @@ variable "aws_instance_type" {
 
 variable "aws_access_key" {
   description = "AWS IAM Access Key"
-  sensitive = true
+  sensitive   = true
 }
 
 variable "aws_secret_key" {
   description = "AWS IAM Secret Key"
-  sensitive = true
+  sensitive   = true
 }
 
 variable "key_name" {
   description = "AWS keypair for k8s benchmarks"
-  default = "k8s-benchmarks"
+  default     = "k8s-benchmarks"
 }
 
 variable "privkey_file" {
   description = "AWS SSH private key file to use"
-  default = "k8sbenchmarks"
+  default     = "k8sbenchmarks"
 }
 
 variable "pubkey_file" {
   description = "AWS SSH public key file to use"
-  default = "k8sbenchmarks.pub"
+  default     = "k8sbenchmarks.pub"
 }

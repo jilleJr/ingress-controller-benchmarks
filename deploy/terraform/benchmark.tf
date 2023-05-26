@@ -27,12 +27,12 @@ provider "aws" {
 }
 
 resource "aws_instance" "k8s-benchmarks" {
-  ami = "ami-0bbe28eb2173f6167"
-  instance_type = "t2.micro"
-  subnet_id = aws_subnet.k8s-benchmarks.id
+  ami                    = "ami-0bbe28eb2173f6167"
+  instance_type          = "t2.micro"
+  subnet_id              = aws_subnet.k8s-benchmarks.id
   vpc_security_group_ids = [aws_security_group.k8s-benchmarks.id]
-  key_name = aws_key_pair.generated_key.key_name
-  user_data = <<-EOF
+  key_name               = aws_key_pair.generated_key.key_name
+  user_data              = <<-EOF
 		#! /bin/bash
                 apt-get update
 		apt-get -y upgrade
@@ -80,24 +80,24 @@ resource "aws_instance" "k8s-benchmarks" {
   ]
 
   provisioner "remote-exec" {
-      when = destroy
-      inline = [
-        "export AWS_ACCESS_KEY_ID=$(aws configure get aws_access_key_id)",
-        "export AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key)",
-        "kops delete cluster --state=s3://prefix-k8sbenchmarks-kops-state-store --name k8stmp.k8s.local --yes",
-        "aws s3 rb s3://prefix-k8sbenchmarks-kops-state-store --force"
-      ]
-#
-# Unfortunately due to constraints in terraform we need to
-# hardcode the filename for private_key as you can no longer
-# pass variables.
-#
-      connection {
-        type        = "ssh"
-        user        = "ubuntu"
-        private_key = file("k8sbenchmarks") 
-        host = self.public_ip
-      }
+    when = destroy
+    inline = [
+      "export AWS_ACCESS_KEY_ID=$(aws configure get aws_access_key_id)",
+      "export AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key)",
+      "kops delete cluster --state=s3://prefix-k8sbenchmarks-kops-state-store --name k8stmp.k8s.local --yes",
+      "aws s3 rb s3://prefix-k8sbenchmarks-kops-state-store --force"
+    ]
+    #
+    # Unfortunately due to constraints in terraform we need to
+    # hardcode the filename for private_key as you can no longer
+    # pass variables.
+    #
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      private_key = file("k8sbenchmarks")
+      host        = self.public_ip
+    }
   }
 }
 
@@ -163,7 +163,7 @@ resource "aws_iam_group" "group" {
 resource "aws_iam_group_policy_attachment" "group-policy-attachment" {
   for_each = toset([
     "arn:aws:iam::aws:policy/AmazonEC2FullAccess",
-    "arn:aws:iam::aws:policy/AmazonRoute53FullAccess", 
+    "arn:aws:iam::aws:policy/AmazonRoute53FullAccess",
     "arn:aws:iam::aws:policy/AmazonS3FullAccess",
     "arn:aws:iam::aws:policy/IAMFullAccess",
     "arn:aws:iam::aws:policy/AmazonVPCFullAccess"
@@ -188,7 +188,7 @@ resource "aws_iam_group_membership" "group" {
 }
 
 resource "aws_iam_access_key" "user" {
-  user    = aws_iam_user.user.name
+  user = aws_iam_user.user.name
 }
 
 resource "time_sleep" "wait_200_seconds" {
@@ -196,7 +196,7 @@ resource "time_sleep" "wait_200_seconds" {
 }
 
 output "GETTINGSTARTED" {
-    value = <<GETTINGSTARTED
+  value = <<GETTINGSTARTED
 The benchmark instance is ready to go and the kubernetes cluster is currently being configured.
 It will take a few minutes to fully spin up.
 Upon connecting to the instance you will need to wait for the Kubernetes cluster to completely initialize before you are dropped to the shell.
