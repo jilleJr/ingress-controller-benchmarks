@@ -22,9 +22,15 @@ variable "aws_instance_type" {
   default     = "t2.micro"
 }
 
-variable "aws_access_key" {}
+variable "aws_access_key" {
+  description = "AWS IAM Access Key"
+  sensitive = true
+}
 
-variable "aws_secret_key" {}
+variable "aws_secret_key" {
+  description = "AWS IAM Secret Key"
+  sensitive = true
+}
 
 variable "key_name" {
   description = "AWS keypair for k8s benchmarks"
