@@ -249,13 +249,28 @@ single() {
     start traefik "Traefik" 1 250 $1
 }
 
+usage() {
+    cat << EOF
+Usage: $0 <command>
+
+Commands:
+  cleanup   Deletes temporary Kubernetes resources used in benchmarks.
+
+  parse     Parse collected data and creates both single and saturated graphs.
+
+  saturate  Perform single benchmarks and create single graph.
+
+  saturate  Perform saturation benchmark and create saturation graph.
+EOF
+}
+
 case $1 in
-    "cleanup")
-      cleanup
+    "--help", "-h", "help")
+      usage
       exit
     ;;
-    "collect")
-      collect
+    "cleanup")
+      cleanup
       exit
     ;;
     "parse")
@@ -274,6 +289,11 @@ case $1 in
       setup 5
       saturate
       parse saturate
+    ;;
+    *)
+      echo "Unknown command: $1"
+      usage
+      exit 1
     ;;
 esac
 
