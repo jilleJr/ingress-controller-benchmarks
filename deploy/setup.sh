@@ -122,7 +122,7 @@ echo "Applying Ingress rules ..."
 
 for i in deploy/manifests/ingress/*; do
     ingress=${i##*/}
-    kubectl apply -f  $i >/dev/null 2>&1
+    kubectl apply -f "$i" >/dev/null
     echo -e "\t \xE2\x9C\x85 ${ingress%%.*}"
 done
 
