@@ -58,7 +58,6 @@ fi
 ################################
 echo -n "Adding Helm repositories ... "
 helm repo add haproxytech https://haproxytech.github.io/helm-charts >/dev/null 2>&1
-helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx >/dev/null 2>&1
 helm repo add traefik https://traefik.github.io/charts >/dev/null 2>&1
 helm repo update >/dev/null 2>&1
 echo -e "\xE2\x9C\x85"

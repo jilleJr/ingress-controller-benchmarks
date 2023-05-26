@@ -107,7 +107,7 @@ check_cpu() {
     prefix="$proxy"
     percent=0
     current_percent=0
-    cmd_opts=""
+    container=""
 
     sleep 30
 
@@ -115,14 +115,22 @@ check_cpu() {
         prefix="nginx-controller"
     fi;
     pod="$(kubectl get pod -o name |grep "$prefix-"|grep -v backend)"
-    if [ "$proxy" == "envoy" ]; then
-        cmd_opts="-c envoy"
-        kubectl exec -it $pod -c envoy -- sh -c 'apt update && apt install sysstat'
-    fi
-    cmd="kubectl exec -it $pod $cmd_opts -- sh -c \"mpstat 1 5 | grep Average |awk '/^Average/ {print int(\\\$3)}'|tail -n 1\""
+    case "$proxy" in
+        envoy) container="envoy" ;;
+        nginx) container="nginx-ingress" ;;
+        haproxy) container="kubernetes-ingress-controller" ;;
+        traefik) container="traefik" ;;
+        *)
+            echo "ERROR: Unknown container name for '$proxy'!"
+            exit 1
+            ;;
+    esac
+    kubectl debug $pod -c mpstat -- $container --image ubuntu -- sleep infinity
+    sleep 5
+    kubectl exec -t $pod -c mpstat -- sh -c 'apt update && apt install sysstat -y' >/dev/null
 
     while [ "$(ps -efH |grep "$proxy.default"|grep -v grep)" ]; do
-        current_percent=$(eval $cmd |sed 's/%//g'|tr -d '\r')
+        current_percent=$(kubectl exec -it $pod -c mpstat -- sh -c "mpstat 1 5 | grep Average |awk '/^Average/ {print int(\$3)}'|tail -n 1" |sed 's/%//g'|tr -d '\r')
         if [ "$current_percent" -gt "$percent" ]; then
             percent=$current_percent
         fi
