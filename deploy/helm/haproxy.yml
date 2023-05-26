@@ -18,6 +18,7 @@ controller:
   kind: Deployment
   replicaCount: 1
   ingressClass: haproxy
+  unprivileged: false
   service:
     type: ClusterIP
     clusterIP: None  
