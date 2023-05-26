@@ -61,9 +61,13 @@ spec:
       containers:
       - name: ubuntu
         image: ubuntu:latest
-        # Just sleep forever
-        command: [ "sleep"]
-        args: [ "infinity" ]
+        # Just sleep forever, but exit quickly on 'kubectl delete pod'
+        command: [bash, -c]
+        args:
+          - |
+            trap exit INT TERM
+            sleep infinity &
+            wait
 "
     mkdir -p /home/ubuntu/.parallel
     touch /home/ubuntu/.parallel/will-cite
