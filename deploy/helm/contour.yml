@@ -14,3 +14,6 @@ envoy:
       effect: "NoSchedule" 
   nodeSelector:
     dedicated: controller
+  containerSecurityContext:
+    runAsUser: 0
+    runAsNonRoot: false
