@@ -33,3 +33,5 @@ spec:
             name: echo
             port:
               name: http
+        path: /
+        pathType: Prefix
