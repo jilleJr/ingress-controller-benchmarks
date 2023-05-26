@@ -25,8 +25,7 @@ graph() {
 	envoy_bar1="-bar1"
 	haproxy_bar2="-bar2"
 	nginx_bar3="-bar3"
-	nginxinc_bar4="-bar4"
-	traefik_bar5="-bar5"
+	traefik_bar4="-bar4"
         for file in $(find tmp/$1/ -name '*.txt'|sort); do
 	    c_502=0
 	    c_503=0
@@ -82,10 +81,8 @@ graph() {
 		haproxy_bar2="$haproxy_bar2 $(echo "`grep '75%' $file |awk '{print $3}'` * 1000" | bc) $(echo "`grep '95%' $file |awk '{print $3}'` * 1000" | bc) $(echo "`grep '99%' $file |awk '{print $3}'` * 1000" | bc)"
             elif [ "$proxy" == "nginx" ]; then
 		nginx_bar3="$nginx_bar3 $(echo "`grep '75%' $file |awk '{print $3}'` * 1000" | bc) $(echo "`grep '95%' $file |awk '{print $3}'` * 1000" | bc) $(echo "`grep '99%' $file |awk '{print $3}'` * 1000" | bc)"
-            elif [ "$proxy" == "nginx-inc" ]; then
-                nginxinc_bar4="$nginxinc_bar4 $(echo "`grep '75%' $file |awk '{print $3}'` * 1000" | bc) $(echo "`grep '95%' $file |awk '{print $3}'` * 1000" | bc) $(echo "`grep '99%' $file |awk '{print $3}'` * 1000" | bc)"
             elif [ "$proxy" == "traefik" ]; then
-                traefik_bar5="$traefik_bar5 $(echo "`grep '75%' $file |awk '{print $3}'` * 1000" | bc) $(echo "`grep '95%' $file |awk '{print $3}'` * 1000" | bc) $(echo "`grep '99%' $file |awk '{print $3}'` * 1000" | bc)"
+                traefik_bar4="$traefik_bar4 $(echo "`grep '75%' $file |awk '{print $3}'` * 1000" | bc) $(echo "`grep '95%' $file |awk '{print $3}'` * 1000" | bc) $(echo "`grep '99%' $file |awk '{print $3}'` * 1000" | bc)"
             fi
 
             s_502="$s_502 $c_502"

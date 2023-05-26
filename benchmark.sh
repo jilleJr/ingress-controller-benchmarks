@@ -74,7 +74,6 @@ spec:
     kubectl -n ubuntu-injector apply -f $temp_yaml >/dev/null 2>&1
     sleep 7
     kubectl get pods -n ubuntu-injector -o name|parallel --max-proc 0 kubectl -n ubuntu-injector exec {} -- bash -c \""$B_INIT_CMD"\" >/dev/null 2>&1
-    kubectl get pods -o name |grep nginx-inc | parallel --max-proc 0 kubectl exec {} -- sh -c \""$A_INIT_CMD"\" >/dev/null 2>&1
     kubectl get pods -o name |grep envoy | parallel --max-proc 0 kubectl exec {} -c envoy -- sh -c \""$A_INIT_CMD"\" >/dev/null 2>&1
     sleep 5
     display_working $! "Setup"
@@ -101,7 +100,6 @@ REPLACE_CONN="$4"
 check_cpu() {
     proxy="$2"
     prefix="$proxy"
-    loop="true"
     percent=0
     current_percent=0
     cmd_opts=""
@@ -207,26 +205,6 @@ patch_nginx() {
     fi
 }
 
-patch_nginx-inc() {
-    if [ "$1" == "cors" ]; then
-        if [ "$2" == "remove" ]; then
-            kubectl -n app annotate ingress nginx-inc nginx.org/server-snippets-
-        else
-            kubectl -n app annotate ingress nginx-inc nginx.org/server-snippets="
-                add_header access-control-allow-origin nginx-inc.default;
-                add_header access-control-allow-credentials true;
-                add_header access-control-allow-methods GET,PUT,POST,DELETE,PATCH,OPTIONS;
-                add_header access-control-allow-headers DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization;"
-        fi
-    elif [ "$1" == "rewrite" ]; then
-        if [ "$2" == "remove" ]; then
-            kubectl -n app annotate ingress nginx-inc nginx.org/rewrites-
-        else
-            kubectl -n app annotate ingress nginx-inc nginx.org/rewrites="serviceName=echo rewrite=/test"
-        fi
-    fi
-}
-
 patch_traefik() {
     if [ "$1" == "cors" ]; then
         if [ "$2" == "remove" ]; then
@@ -259,7 +237,6 @@ saturate() {
     printf "Starting saturation benchmarks\n\n"
     start envoy "Contour (Envoy Proxy)" 5 50 $1
     start haproxy "HAProxy" 5 50 $1
-    start nginx-inc "NGINX Inc." 5 50 $1
     start nginx "NGINX" 5 50 $1
     start traefik "Traefik" 5 50 $1
 }
@@ -268,7 +245,6 @@ single() {
     printf "Starting single benchmarks\n"
     start envoy "Contour (Envoy Proxy)" 1 250 $1
     start haproxy "HAProxy" 1 250 $1
-    start nginx-inc "NGINX Inc." 1 250 $1
     start nginx "NGINX" 1 250 $1
     start traefik "Traefik" 1 250 $1
 }

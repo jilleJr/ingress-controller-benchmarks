@@ -66,7 +66,6 @@ echo -e "\xE2\x9C\x85"
 declare -A HELM
 HELM[haproxy]="haproxytech/kubernetes-ingress --version 1.30.5"
 HELM[nginx]="oci://ghcr.io/nginxinc/charts/nginx-ingress --version 0.17.1"
-HELM[nginx-inc]="nginx-stable/nginx-ingress --version 0.17.1"
 HELM[traefik]="traefik/traefik --version 23.0.1"
 HELM[contour]="oci://registry-1.docker.io/bitnamicharts/contour --version 12.1.0"
 
@@ -87,15 +86,6 @@ for C in "${!HELM[@]}"; do
         echo -e "\t \xE2\x9C\x85 $C controller already installed"
     fi
 done
-
-# Update NginxInc service
-kubectl get service nginx-inc-nginx-ingress > /dev/null 2>&1
-if [ $? -eq 0 ]; then
-    kubectl get service nginx-inc-nginx-ingress -o yaml | sed  's/clusterIP:.*/clusterIP: None/' | kubectl replace --force -f - >/dev/null 2>&1
-    kubectl get service nginx-inc-nginx-ingress -o yaml | sed  's/name: nginx-inc-nginx-ingress/name: nginx-inc/' | kubectl apply -f - >/dev/null 2>&1
-    kubectl delete service nginx-inc-nginx-ingress >/dev/null 2>&1
-fi
-
 
 # Install echo application
 ##########################
@@ -138,7 +128,7 @@ done
 
 # Create default certificates
 echo "Adding Secrets ..."	
-for proxy in haproxy nginx nginx-inc traefik envoy; do
+for proxy in haproxy nginx traefik envoy; do
     kubectl get secrets -n app -o name | grep -q "secret/${proxy}$"
     if [ $? -ne 0 ]; then
         ./deploy/scripts/create-default-cert.sh $proxy >/dev/null 2>&1
@@ -147,9 +137,5 @@ for proxy in haproxy nginx nginx-inc traefik envoy; do
         echo -e "\t \xE2\x9C\x85 $proxy already installed"
     fi
 done
-
-echo "Updating securityContext for nginx-inc ..."
-kubectl  patch deployment nginx-inc --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/securityContext/runAsUser", "value":0}]'  >/dev/null
-kubectl  patch deployment nginx-inc --type='json' -p='[{"op": "remove", "path": "/spec/template/spec/containers/0/securityContext/capabilities", "value":[]}]'  >/dev/null
 
 echo "Done!"

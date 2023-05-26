@@ -49,7 +49,7 @@ if [ -f "$(which kops)" ]; then
 
     if [ -f "$(which kubectl)" ]; then
         configured="false"
-        for proxy in haproxy nginx nginx-inc traefik envoy; do
+        for proxy in haproxy nginx traefik envoy; do
             kubectl get secrets -n app -o name | grep -q "secret/${proxy}$"
             if [ $? -ne 0 ]; then
                 configured="false"
