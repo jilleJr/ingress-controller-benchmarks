@@ -17,6 +17,11 @@ variable "aws_region" {
   default     = "us-east-2"
 }
 
+variable "aws_ec2_zone" {
+  description = "AWS EC2 region"
+  default     = "us-east-2a"
+}
+
 variable "aws_instance_type" {
   description = "AWS instance type for nodes"
   default     = "t2.micro"

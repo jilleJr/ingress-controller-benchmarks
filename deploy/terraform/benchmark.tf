@@ -39,12 +39,12 @@ resource "aws_instance" "k8s-benchmarks" {
     apt-get -y install awscli python3-pip parallel unzip
     curl -Lo - https://github.com/haproxytech/ingress-controller-benchmarks/archive/master.tar.gz |tar -C ~ubuntu/ -xz
     mv ~ubuntu/ingress-controller-benchmarks-master ~ubuntu/ingress-controller-benchmarks
-    mkdir -p ~ubuntu/ingress-controller-benchmarks/tmp/single
-    mkdir -p ~ubuntu/ingress-controller-benchmarks/tmp/saturate
+    mkdir -pv ~ubuntu/ingress-controller-benchmarks/tmp/single
+    mkdir -pv ~ubuntu/ingress-controller-benchmarks/tmp/saturate
     printf ". ingress-controller-benchmarks/deploy/scripts/configure_k8s_cluster.sh\n" >> ~ubuntu/.profile
-    mkdir ~/.aws
+    mkdir -v ~/.aws
     printf "[default]\n" > ~/.aws/config
-    printf "region = us-east-2\n" >> ~/.aws/config
+    printf "region = ${var.aws_region}\n" >> ~/.aws/config
     printf "[default]\n" > ~/.aws/credentials
     printf "aws_access_key_id = ${aws_iam_access_key.user.id}\n" >> ~/.aws/credentials
     printf "aws_secret_access_key = ${aws_iam_access_key.user.secret}\n" >> ~/.aws/credentials
@@ -58,10 +58,10 @@ resource "aws_instance" "k8s-benchmarks" {
     pip3 install matplotlib numpy
     export AWS_ACCESS_KEY_ID=${aws_iam_access_key.user.id}
     export AWS_SECRET_ACCESS_KEY=${aws_iam_access_key.user.secret}
-    aws s3api create-bucket --bucket prefix-k8sbenchmarks-kops-state-store --region us-east-1
-    kops create cluster --state s3://prefix-k8sbenchmarks-kops-state-store --cloud=aws --zones=us-east-2a --node-count=6 --node-size=c5.xlarge --master-size=c5.xlarge --ssh-public-key ~/k8s-benchmarks.id_rsa.pub --yes --name k8stmp.k8s.local
+    aws s3api create-bucket --bucket prefix-k8sbenchmarks-kops-state-store --region ${var.aws_region}
+    kops create cluster --state s3://prefix-k8sbenchmarks-kops-state-store --cloud=aws --zones=${var.aws_ec2_zone} --node-count=6 --node-size=c5.xlarge --master-size=c5.xlarge --ssh-public-key ~/k8s-benchmarks.id_rsa.pub --yes --name k8stmp.k8s.local
     kops export kubecfg --state s3://prefix-k8sbenchmarks-kops-state-store --name k8stmp.k8s.local
-    mv /.kube ~ubuntu/
+    mv -v /.kube ~ubuntu/
     cp ~/k8s* ~ubuntu/
     cp -r ~/.aws ~ubuntu/
     chmod 700 ~ubuntu/.ssh
