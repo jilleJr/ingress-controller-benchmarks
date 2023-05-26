@@ -148,13 +148,8 @@ for proxy in haproxy nginx nginx-inc traefik envoy; do
     fi
 done
 
-# Update Nginx service name from "nginx-controller" to "nginx"
-kubectl get service nginx-controller > /dev/null 2>&1
-if [ $? -eq 0 ]; then
-    kubectl get service nginx-controller -o yaml | sed  's/name: nginx-controller/name: nginx/' | kubectl apply -f - >/dev/null 2>&1
-    kubectl delete service nginx-controller >/dev/null 2>&1
-fi
+echo "Updating securityContext for nginx-inc ..."
+kubectl  patch deployment nginx-inc --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/securityContext/runAsUser", "value":0}]'  >/dev/null
+kubectl  patch deployment nginx-inc --type='json' -p='[{"op": "remove", "path": "/spec/template/spec/containers/0/securityContext/capabilities", "value":[]}]'  >/dev/null
 
-kubectl  patch deployment nginx-inc --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/securityContext/runAsUser", "value":0}]'  >/dev/null 2>&1
-kubectl  patch deployment nginx-inc --type='json' -p='[{"op": "remove", "path": "/spec/template/spec/containers/0/securityContext/capabilities", "value":[]}]'  >/dev/null 2>&1
-
+echo "Done!"

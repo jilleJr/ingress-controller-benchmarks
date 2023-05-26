@@ -20,6 +20,7 @@ controller:
   service:
     type: ClusterIP
     clusterIP: None
+    name: nginx
   publishService:
     enabled: true
     pathOverride: "$(POD_NAMESPACE)/nginx"
