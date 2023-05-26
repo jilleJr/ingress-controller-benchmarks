@@ -265,7 +265,7 @@ EOF
 }
 
 case $1 in
-    --help|-h|help)
+    --help|-h|help|"")
       usage
       exit
     ;;
