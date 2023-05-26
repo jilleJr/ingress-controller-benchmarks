@@ -265,26 +265,26 @@ EOF
 }
 
 case $1 in
-    "--help", "-h", "help")
+    --help|-h|help)
       usage
       exit
     ;;
-    "cleanup")
+    cleanup)
       cleanup
       exit
     ;;
-    "parse")
+    parse)
       parse single
       parse saturate 
       exit
     ;;
-    "single")
+    single)
       cleanup
       setup 1
       single
       parse single
     ;;
-    "saturate")
+    saturate)
       cleanup
       setup 5
       saturate
