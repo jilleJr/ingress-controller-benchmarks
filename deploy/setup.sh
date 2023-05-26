@@ -101,21 +101,25 @@ fi
 ##########################
 
 # Helm
-kubectl create ns app >/dev/null 2>&1
-git clone https://github.com/Mo3m3n/http-echo-chart.git /tmp/http-echo-chart >/dev/null 2>&1
 
 helm ls -n app| grep -q "echo\s"
 
 if [ $? -ne 0 ]; then
     echo -n "Installing echo app ... "
+    kubectl create ns app >/dev/null 2>&1
+    git clone https://github.com/Mo3m3n/http-echo-chart.git /tmp/http-echo-chart >/dev/null 2>&1
+
     helm install echo -n app /tmp/http-echo-chart --set fullnameOverride=echo --set replicaCount=10 --set ingress.enabled=false >/dev/null 2>&1
     echo -e "\xE2\x9C\x85"
+
+    rm -rf /tmp/http-echo-chart >/dev/null 2>&1
+
+    echo -n "Waiting 30s for ingresses and echo application to start up ..."
+    sleep 30
+    echo -e "\xE2\x9C\x85"
+else
+    echo -e "The echo app is already installed \xE2\x9C\x85"
 fi
-
-rm -rf /tmp/http-echo-chart >/dev/null 2>&1
-
-echo "Waiting 30s for ingresses and echo application to start up ..."
-sleep 30
 
 # Install Ingress rules
 echo "Applying Ingress rules ..."
@@ -123,7 +127,12 @@ echo "Applying Ingress rules ..."
 for i in deploy/manifests/ingress/*; do
     ingress=${i##*/}
     kubectl apply -f "$i" >/dev/null
-    echo -e "\t \xE2\x9C\x85 ${ingress%%.*}"
+    if [ $? -ne 0 ]; then
+        echo -e "\t \xe2\x9d\x8c [Install of ${ingress%%.*} ingress failed]"
+        exit 1
+    else
+        echo -e "\t \xE2\x9C\x85 ${ingress%%.*} ingress installed"
+    fi
 done
 
 
