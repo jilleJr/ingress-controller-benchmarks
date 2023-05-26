@@ -125,9 +125,9 @@ check_cpu() {
             exit 1
             ;;
     esac
-    kubectl debug $pod -c mpstat --target $container --image ubuntu -- sleep infinity
+    kubectl debug $pod -c mpstat --target $container --image ubuntu -- sleep infinity >/dev/null
     sleep 5
-    kubectl exec -t $pod -c mpstat -- sh -c 'apt update && apt install sysstat -y' >/dev/null
+    kubectl exec -t $pod -c mpstat -- sh -c 'apt-get update && apt-get install sysstat -y' >/dev/null
 
     while [ "$(ps -efH |grep "$proxy.default"|grep -v grep)" ]; do
         current_percent=$(kubectl exec -it $pod -c mpstat -- sh -c "mpstat 1 5 | grep Average |awk '/^Average/ {print int(\$3)}'|tail -n 1" |sed 's/%//g'|tr -d '\r')
