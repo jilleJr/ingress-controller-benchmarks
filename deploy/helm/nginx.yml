@@ -15,7 +15,7 @@
 ---
 fullnameOverride: nginx
 controller:
-  kind: Deployment
+  kind: deployment
   replicaCount: 1
   service:
     type: ClusterIP
