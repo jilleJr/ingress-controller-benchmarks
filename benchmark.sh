@@ -125,7 +125,7 @@ check_cpu() {
             exit 1
             ;;
     esac
-    kubectl debug $pod -c mpstat -- $container --image ubuntu -- sleep infinity
+    kubectl debug $pod -c mpstat --target $container --image ubuntu -- sleep infinity
     sleep 5
     kubectl exec -t $pod -c mpstat -- sh -c 'apt update && apt install sysstat -y' >/dev/null
 
