@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: envoy
+  namespace: app
+spec:
+  ingressClassName: envoy
+  tls:
+  - hosts:
+    - envoy.default
+    secretName: envoy
+  rules:
+  - host: envoy.default
+    http:
+      paths:
+      - backend:
+          service:
+            name: echo
+            port:
+              name: http
+        path: /
+        pathType: Prefix
+
