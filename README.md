@@ -31,7 +31,7 @@ To be able to run this benchmark you will need the following:
    ```
 3. Generate SSH key
    ```bash
-   ssh-keygen -f k8benchmarks -t rsa
+   ssh-keygen -f k8sbenchmarks -t rsa
    ```
 4. Run terraform
    ```bash
