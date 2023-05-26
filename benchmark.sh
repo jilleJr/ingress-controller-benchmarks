@@ -112,7 +112,7 @@ check_cpu() {
     pod="$(kubectl get pod -o name |grep "$prefix-"|grep -v backend)"
     if [ "$proxy" == "envoy" ]; then
         cmd_opts="-c envoy"
-        kubectl exec -it $pod -- sh -c 'apt update && apt install sysstat'
+        kubectl exec -it $pod -c envoy -- sh -c 'apt update && apt install sysstat'
     fi
     cmd="kubectl exec -it $pod $cmd_opts -- sh -c \"mpstat 1 5 | grep Average |awk '/^Average/ {print int(\\\$3)}'|tail -n 1\""
 
