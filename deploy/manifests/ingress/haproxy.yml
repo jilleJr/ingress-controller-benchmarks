@@ -29,5 +29,7 @@ spec:
     http:
       paths:
       - backend:
-          serviceName: echo
-          servicePort: http
+          service:
+            name: echo
+            port:
+              name: http
