@@ -259,7 +259,7 @@ Commands:
 
   parse     Parse collected data and creates both single and saturated graphs.
 
-  saturate  Perform single benchmarks and create single graph.
+  single    Perform single benchmarks and create single graph.
 
   saturate  Perform saturation benchmark and create saturation graph.
 EOF
