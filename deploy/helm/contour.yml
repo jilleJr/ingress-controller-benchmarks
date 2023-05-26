@@ -1,0 +1,15 @@
+---
+# https://github.com/bitnami/charts/tree/main/bitnami/contour
+
+envoy:
+  kind: deployment
+  service:
+    type: ClusterIP
+    clusterIP: None
+  tolerations:
+    - key: "dedicated"
+      operator: "Equal"
+      value: "controller"
+      effect: "NoSchedule" 
+  nodeSelector:
+    dedicated: controller

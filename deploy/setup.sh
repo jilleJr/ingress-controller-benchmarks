@@ -58,17 +58,17 @@ fi
 ################################
 echo -n "Adding Helm repositories ... "
 helm repo add haproxytech https://haproxytech.github.io/helm-charts >/dev/null 2>&1
-helm repo add nginx-stable https://helm.nginx.com/stable >/dev/null 2>&1
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx >/dev/null 2>&1
-helm repo add traefik https://containous.github.io/traefik-helm-chart >/dev/null 2>&1
+helm repo add traefik https://traefik.github.io/charts >/dev/null 2>&1
 helm repo update >/dev/null 2>&1
 echo -e "\xE2\x9C\x85"
 
 declare -A HELM
-HELM[haproxy]=haproxytech/kubernetes-ingress
-HELM[nginx]=ingress-nginx/ingress-nginx
-HELM[nginx-inc]=nginx-stable/nginx-ingress
-HELM[traefik]=traefik/traefik
+HELM[haproxy]="haproxytech/kubernetes-ingress --version 1.30.5"
+HELM[nginx]="oci://ghcr.io/nginxinc/charts/nginx-ingress --version 0.17.1"
+HELM[nginx-inc]="nginx-stable/nginx-ingress --version 0.17.1"
+HELM[traefik]="traefik/traefik --version 23.0.1"
+HELM[envoy]="oci://registry-1.docker.io/bitnamicharts/contour --version 12.1.0"
 
 sleep 5
 
@@ -76,7 +76,7 @@ echo "Installing ingress controllers ..."
 for C in "${!HELM[@]}"; do 
     helm ls | grep -q "$C\s"
     if [ $? -ne 0 ]; then
-        helm install $C -f deploy/helm/$C.yml ${HELM[$C]}> /dev/null
+        helm install $C -f "deploy/helm/$C.yml" ${HELM[$C]}> /dev/null
         if [ $? -ne 0 ]; then
             echo -e "\t \xe2\x9d\x8c [Install of $C controller failed]"
             exit 1
@@ -87,14 +87,6 @@ for C in "${!HELM[@]}"; do
         echo -e "\t \xE2\x9C\x85 $C controller already installed"
     fi
 done
-
-kubectl apply -f deploy/manifests/contour.yml > /dev/null
-if [ $? -eq 0 ]; then
-    echo -e "\t \xE2\x9C\x85 contour/envoy controller installed"
-else
-    echo "\t \xe2\x9d\x8c [Install of contour controller failed]"
-    exit 1
-fi
 
 # Update NginxInc service
 kubectl get service nginx-inc-nginx-ingress > /dev/null 2>&1
@@ -122,17 +114,7 @@ fi
 
 rm -rf /tmp/http-echo-chart >/dev/null 2>&1
 
-echo "Applying CRDs ..."
-# Install HTTPProxy CRD
-kubectl -n app apply -f deploy/manifests/crd/envoy/httpproxy.yaml >/dev/null 2>&1
-echo -e "\t \xE2\x9C\x85 contour/envoy CRDs applied"
-# Install IngressRoute CRD
-kubectl -n app apply -f deploy/manifests/crd/traefik/traefik.ingressroute.yaml >/dev/null 2>&1
-kubectl -n app apply -f deploy/manifests/crd/traefik/traefiktls.ingressroute.yaml >/dev/null 2>&1
-kubectl -n app apply -f deploy/manifests/crd/traefik/replace-path.middleware.yaml >/dev/null 2>&1
-kubectl -n app apply -f deploy/manifests/crd/traefik/addcors.middleware.yaml >/dev/null 2>&1
-echo -e "\t \xE2\x9C\x85 traefik CRDs applied"
-
+echo "Waiting 30s for ingresses and echo application to start up ..."
 sleep 30
 
 # Install Ingress rules
