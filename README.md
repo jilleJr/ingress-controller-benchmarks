@@ -22,29 +22,32 @@ To be able to run this benchmark you will need the following:
 
 ## Quickstart
 1. Clone repository
-```
-git clone github
-```
-2. cd deploy/terraform
+   ```bash
+   git clone https://github.com/haproxytech/ingress-controller-benchmarks
+   ```
+2. Navigate to Terraform module
+   ```bash
+   cd deploy/terraform
+   ```
 3. Generate SSH key
-```
-ssh-keygen -f k8benchmarks -t rsa
-```
+   ```bash
+   ssh-keygen -f k8benchmarks -t rsa
+   ```
 4. Run terraform
-```
-terraform init
-terraform apply -auto-approve -var 'aws_access_key=<ACCESS_KEY>' -var 'aws_secret_key=<SECRET_KEY>'
-```
+   ```bash
+   terraform init
+   terraform apply -auto-approve -var 'aws_access_key=<ACCESS_KEY>' -var 'aws_secret_key=<SECRET_KEY>'
+   ```
 5. SSH to the instance provided within the terraform output
 6. After waiting for the Kubernetes cluster to fully initialize, execute the benchmarks.
-```
-# For a single http load generator running 250 concurrent connections
-./benchmark.sh single
-```
-```
-# For 5 http load generators running 50 concurrent connections each
-./benchmark saturate
-```
+   ```bash
+   # For a single http load generator running 250 concurrent connections
+   ./benchmark.sh single
+   ```
+   ```bash
+   # For 5 http load generators running 50 concurrent connections each
+   ./benchmark saturate
+   ```
 
 ## Overview
 ### Kubernetes Cluster
