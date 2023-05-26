@@ -25,11 +25,7 @@ ports:
       port: 80
     websecure:
       port: 443
-securityContext:
-  capabilities:
-    drop:
-  runAsNonRoot: false
-  runAsUser: 0
+podSecurityContext: null
 tolerations:
   - key: "dedicated"
     operator: "Equal"
