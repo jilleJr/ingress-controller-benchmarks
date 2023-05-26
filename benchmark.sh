@@ -89,6 +89,7 @@ REPLACE_CONN="$4"
     else
         t="saturate"
     fi
+    mkdir -pv tmp/$t
     kubectl get pods -n ubuntu-injector -o name|parallel --max-proc 0 kubectl -n ubuntu-injector exec {} -- bash -c \""hey $CSVOUTPUT -z 360s -c $REPLACE_CONN https://$1.default/"\" |grep -v response-time |sort -nt ',' -k 8  >tmp/$t/$1.$EXT &
     display_working $! "Benchmarking $2" 6 &
     check_cpu $t $1 &
