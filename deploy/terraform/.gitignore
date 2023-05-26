@@ -1,0 +1,9 @@
+# Terraform
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
+terraform.trstate.*.backup
+
+# SSH keys
+k8sbenchmarks
+k8sbenchmarks.pub
