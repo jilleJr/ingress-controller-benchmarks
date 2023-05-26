@@ -142,7 +142,9 @@ for proxy in haproxy nginx nginx-inc traefik envoy; do
     kubectl get secrets -n app -o name | grep -q "secret/${proxy}$"
     if [ $? -ne 0 ]; then
         ./deploy/scripts/create-default-cert.sh $proxy >/dev/null 2>&1
-	echo -e "\t \xE2\x9C\x85 $proxy"
+        echo -e "\t \xE2\x9C\x85 $proxy installed"
+    else
+        echo -e "\t \xE2\x9C\x85 $proxy already installed"
     fi
 done
 
